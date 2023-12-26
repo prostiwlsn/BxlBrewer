@@ -40,28 +40,32 @@ namespace BxlConverter
             return pixels;
         }
 
-        public byte[] ArrayToSequence(uint[,] brightness, uint capacity)
+        public byte[] ArrayToSequence(uint[,] brightness, int height, int width)
         {
-            byte[] sequence = new byte[capacity/2];
+            byte[] sequence = new byte[height*width / 2];
 
             bool appending = false;
             string summingString = "";
             uint index = 0;
 
-            foreach (uint b in brightness)
+            for (int y = 0; y < height; y++)
             {
-                summingString += b.ToString("X");
-
-                if (appending)
+                for (int x = 0; x < width; x++)
                 {
-                    sequence[index / 2] = Convert.ToByte(summingString, 16);
+                    var b = brightness[x,y];
+                    summingString += b.ToString("X");
 
-                    summingString = "";
+                    if (appending)
+                    {
+                        sequence[index / 2] = Convert.ToByte(summingString, 16);
+
+                        summingString = "";
+                    }
+
+                    appending = !appending;
+
+                    index++;
                 }
-
-                appending = !appending;
-
-                index++;
             }
 
             return sequence;
